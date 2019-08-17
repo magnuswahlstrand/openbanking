@@ -2,30 +2,23 @@ package seb
 
 type Account struct {
 	Accounts []struct {
-		ResourceID string `json:"resourceId"`
-		Iban       string `json:"iban"`
-		Bban       string `json:"bban"`
-		Currency   string `json:"currency"`
-		OwnerName  string `json:"ownerName"`
-		Balances   []struct {
-			BalanceType         string `json:"balanceType"`
-			CreditLimitIncluded bool   `json:"creditLimitIncluded"`
-			BalanceAmount       struct {
-				Currency string `json:"currency"`
-				Amount   string `json:"amount"`
-			} `json:"balanceAmount"`
-		} `json:"balances"`
-		CreditLine             string `json:"creditLine"`
-		Product                string `json:"product"`
-		Name                   string `json:"name"`
-		Status                 string `json:"status"`
-		StatusDate             string `json:"statusDate"`
-		Bic                    string `json:"bic"`
-		BicAddress             string `json:"bicAddress"`
-		AccountInterest        string `json:"accountInterest"`
-		CardLinkedToTheAccount bool   `json:"cardLinkedToTheAccount"`
-		PaymentService         bool   `json:"paymentService"`
-		BankgiroNumber         string `json:"bankgiroNumber"`
+		ResourceID             string    `json:"resourceId"`
+		Iban                   string    `json:"iban"`
+		Bban                   string    `json:"bban"`
+		Currency               string    `json:"currency"`
+		OwnerName              string    `json:"ownerName"`
+		Balances               []Balance `json:"balances"`
+		CreditLine             string    `json:"creditLine"`
+		Product                string    `json:"product"`
+		Name                   string    `json:"name"`
+		Status                 string    `json:"status"`
+		StatusDate             string    `json:"statusDate"`
+		Bic                    string    `json:"bic"`
+		BicAddress             string    `json:"bicAddress"`
+		AccountInterest        string    `json:"accountInterest"`
+		CardLinkedToTheAccount bool      `json:"cardLinkedToTheAccount"`
+		PaymentService         bool      `json:"paymentService"`
+		BankgiroNumber         string    `json:"bankgiroNumber"`
 		// AccountOwners          struct {
 		// 	Name string `json:"name"`
 		// } `json:"accountOwners"`
@@ -81,12 +74,11 @@ type Account struct {
 	} `json:"accounts"`
 }
 
-type TokenResponse struct {
-	TokenType             string `json:"token_type"`
-	AccessToken           string `json:"access_token"`
-	ExpiresIn             int    `json:"expires_in"`
-	ConsentedOn           string `json:"consented_on"`
-	Scope                 string `json:"scope"`
-	RefreshToken          string `json:"refresh_token"`
-	RefreshTokenExpiresIn string `json:"refresh_token_expires_in"`
+type Balance struct {
+	BalanceType         string `json:"balanceType"`
+	CreditLimitIncluded bool   `json:"creditLimitIncluded"`
+	BalanceAmount       struct {
+		Currency string `json:"currency"`
+		Amount   string `json:"amount"`
+	} `json:"balanceAmount"`
 }

@@ -69,7 +69,7 @@ var cardTemplate = `<div class="card">
   data-parent="#accordionAccounts"
 >
   <div class="card-body">
-    {{metadata}}
+    {{{metadata}}}
   </div>
 </div>
 </div>`;

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/kyeett/openbanking/models"
@@ -145,7 +146,7 @@ func handleGetAccounts(w http.ResponseWriter, r *http.Request) {
 			Iban:             account.Iban,
 			Bban:             account.Bban,
 			Type:             account.Product,
-			AvailableBalance: float64(i) * 100,
+			AvailableBalance: availableBalance(account.Balances),
 			Metadata:         string(b),
 		})
 	}
@@ -156,6 +157,19 @@ func handleGetAccounts(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Something went wrong!"))
 		return
 	}
+}
+
+func availableBalance(balances []seb.Balance) float64 {
+	for _, balance := range balances {
+		if balance.BalanceType == "interimAvailable" {
+			f, err := strconv.ParseFloat(balance.BalanceAmount.Amount, 64)
+			if err != nil {
+				return -1.0
+			}
+			return f
+		}
+	}
+	return -2.0
 }
 
 func handleGetToken(w http.ResponseWriter, r *http.Request) {
