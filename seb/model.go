@@ -82,3 +82,13 @@ type Balance struct {
 		Amount   string `json:"amount"`
 	} `json:"balanceAmount"`
 }
+
+type TokenResponse struct {
+	TokenType             string `json:"token_type"`
+	AccessToken           string `json:"access_token"`
+	ExpiresIn             int    `json:"expires_in"`
+	ConsentedOn           string `json:"consented_on"`
+	Scope                 string `json:"scope"`
+	RefreshToken          string `json:"refresh_token"`
+	RefreshTokenExpiresIn string `json:"refresh_token_expires_in"`
+}

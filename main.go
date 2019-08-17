@@ -134,7 +134,7 @@ func handleGetAccounts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var accountsResponse models.AccountsResponse
-	for i, account := range accounts.Accounts {
+	for _, account := range accounts.Accounts {
 
 		var b []byte
 		b, err = json.MarshalIndent(account, "<br>", "  ")

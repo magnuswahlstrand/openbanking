@@ -1,0 +1,18 @@
+{
+  "accounts": [
+    {
+      "iban": "SE3750000000054400047881",
+      "bban": "54400047881",
+      "type": "Privatkonto",
+      "available_balance": 555.0,
+      "metadata": "Some text here"
+    },
+    {
+      "iban": "SE3750000000054410048881",
+      "bban": "54410048881",
+      "type": "Privatkonto",
+      "available_balance": 777.0,
+      "metadata": "Some text here2"
+    }
+  ]
+}
