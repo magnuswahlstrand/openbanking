@@ -134,12 +134,19 @@ func handleGetAccounts(w http.ResponseWriter, r *http.Request) {
 
 	var accountsResponse models.AccountsResponse
 	for i, account := range accounts.Accounts {
+
+		var b []byte
+		b, err = json.MarshalIndent(account, "<br>", "  ")
+		if err != nil {
+			b = []byte("unknown")
+		}
+
 		accountsResponse.Accounts = append(accountsResponse.Accounts, models.Account{
 			Iban:             account.Iban,
 			Bban:             account.Bban,
 			Type:             account.Product,
 			AvailableBalance: float64(i) * 100,
-			Metadata:         pretty.Sprint(account),
+			Metadata:         string(b),
 		})
 	}
 
