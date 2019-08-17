@@ -11,6 +11,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/kyeett/openbanking/models"
+
 	"github.com/kr/pretty"
 
 	"github.com/go-chi/chi"
@@ -103,7 +105,6 @@ func getAccounts(token string) (seb.Account, error) {
 	fmt.Println(string(b))
 
 	decoder := json.NewDecoder(bytes.NewReader(b))
-	decoder.DisallowUnknownFields()
 	var response seb.Account
 	if err = decoder.Decode(&response); err != nil {
 		return seb.Account{}, errors.New("failed to read response body")
@@ -131,14 +132,23 @@ func handleGetAccounts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(accounts.Accounts)
+	var accountsResponse models.AccountsResponse
+	for i, account := range accounts.Accounts {
+		accountsResponse.Accounts = append(accountsResponse.Accounts, models.Account{
+			Iban:             account.Iban,
+			Bban:             account.Bban,
+			Type:             account.Product,
+			AvailableBalance: float64(i) * 100,
+			Metadata:         pretty.Sprint(account),
+		})
+	}
 
-	// if err := json.NewEncoder(w).Encode(&token); err != nil {
-	// 	fmt.Printf("err: %s\n", err)
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	w.Write([]byte("Something went wrong!"))
-	// 	return
-	// }
+	if err := json.NewEncoder(w).Encode(&accountsResponse); err != nil {
+		fmt.Printf("err: %s\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong!"))
+		return
+	}
 }
 
 func handleGetToken(w http.ResponseWriter, r *http.Request) {
