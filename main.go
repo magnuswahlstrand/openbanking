@@ -217,6 +217,10 @@ func main() {
 	r.Get("/generate_url", handleGenerateURL)
 	r.Get("/token", handleGetToken)
 	r.Get("/accounts", handleGetAccounts)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/index.html", http.StatusSeeOther)
+	})
+
 	r.Get("/{filename}", func(w http.ResponseWriter, r *http.Request) {
 		filename := chi.URLParam(r, "filename")
 
