@@ -1,1 +1,1 @@
-web: bin/openbanking
+web: openbanking
