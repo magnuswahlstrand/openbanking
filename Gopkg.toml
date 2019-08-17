@@ -1,0 +1,7 @@
+[metadata.heroku]
+  root-package = "github.com/kyeett/openbanking"
+  go-version = "go1.11"
+  install = [
+    "./",
+  ]
+  ensure = "false"
