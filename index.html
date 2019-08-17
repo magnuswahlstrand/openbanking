@@ -1,0 +1,215 @@
+<html>
+  <head>
+    <script>
+      var accountsResponse =
+        '{"accounts":[{"iban":"SE3750000000054400047881","bban":"54400047881","type":"Privatkonto","available_balance":555.0,"metadata": "Some text here"},{"iban":"SE3750000000054410048881","bban":"54410048881","type":"Privatkonto","available_balance":777.0,"metadata": "Some text here2"}]}';
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"
+      integrity="sha256-srhz/t0GOrmVGZryG24MVDyFDYZpvUH2+dnJ8FbpGi0="
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- <script src="https://kit.fontawesome.com/d58e762e17.js"></script> -->
+    <script src="scripts.js"></script>
+
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/octicons/8.5.0/build.css"
+      integrity="sha256-iPUhChwurLRCrDCM1+2a2LDe9pfW6Je29o/oA5VPr28="
+      crossorigin="anonymous"
+    />
+
+    <style>
+        .container.content {
+            max-width: 680px;
+        }
+        
+      .test:after {
+        content: "\2807";
+        font-size: 1.5em;
+        color: #2e2e2e;
+      }
+      #accordionAccounts > .card {
+        overflow: unset;
+      }
+
+      .dropright {
+        left: -10px;
+      }
+
+      .footer {
+          background-color: lightgray
+      }
+
+      .faded {
+        opacity:0.2
+      }
+
+    </style>
+  </head>
+  <nav class="navbar fixed-top navbar-light bg-light border">
+        <a class="navbar-brand" href="#">
+            
+                <h1 class="mt-2">Open Banking Demo</h1> <p class="lead">by Kyeett</p>
+
+        </a>
+      </nav>
+      
+  <div class="container">
+        <body class="d-flex flex-column h-100 pt-5">
+            <main role="main" class="flex-shrink-0 pt-5">
+              <div class="container content pt-5">
+                <div class="faded mt-5" id="part_0">
+                    <h3>0. Choose a demo user</h3>
+                        
+                        SEB has definied five demo users. Click on one of them to copy, and then proceed to the next step. <br>
+                    <kbd style="cursor:pointer" onclick="copyToClipboard(event, '9311219639')">9311219639</kbd>
+                    <kbd style="cursor:pointer" onclick="copyToClipboard(event, '9311219589')">9311219589</kbd>
+                    <kbd style="cursor:pointer" onclick="copyToClipboard(event, '8811215477')">8811215477</kbd>
+                    <kbd style="cursor:pointer" onclick="copyToClipboard(event, '8811212862')">8811212862</kbd>
+                    <kbd style="cursor:pointer" onclick="copyToClipboard(event, '8311211356')">8311211356</kbd>
+
+                </div>
+                <div class="faded mt-5" id="part_1">
+                    <h3>1. Authorize</h3>
+            
+                    Open banking uses Oauth2.0. The link will take you to SEB where you sign in. If you used a real system, it would require BankID (or other form or SCA) to sign in, but in this demo it will directly log you in
+
+                    <center>
+                            <button class="btn btn-primary mt-3 mb-3" onclick="authorize()" id="authorize_button">Authorize</button>
+                    </center>
+                </div>
+                <div class="faded mt-5" id="part_2">
+                    <h3>2. Retreive Token</h3>
+                    When the user us authorized, the bank will redirect the browser to an URL specified by the our application, and include a query parameter, code=<kbd>&lt;authroization_code&gt;</kbd>.
+                    We will now use this code to retrieve a <kbd>Token</kbd> from the bank. Normally, this would be done automatically by the application.
+                    
+                    <center>
+                        <button class="btn btn-primary disabled mt-3" onclick="getToken()" id="get_token_button">Get Token</button>
+                    </center>
+
+                </div>
+                <div class="faded mt-5 mb-5" id="part_3">
+                    <h3>3. Retreive Account Information</h3>
+                    Once the <kbd>Token</kbd> is received, we the application can get the account information from the bank server.
+
+                    <center>
+                            <button class="btn btn-primary mt-3 mb-3" onclick="getAccounts()" id="get_accounts_button">Get Accounts</button>
+                    </center>
+
+                    <div class="accordion mt-5" id="accordionAccounts"></div>
+                </div>
+
+
+
+
+            </div>
+            </main>
+
+    </div>
+    <script>
+          $(document).ready(function() {
+        // var accounts = JSON.parse(accountsResponse);
+
+        // $.each(accounts.accounts, function(index, account) {
+        //   $("#accordionAccounts").append(generateCard(account, index));
+        // });
+
+        // var element = document.getElementById("scroll");
+        // element.scrollIntoView({ behavior: 'smooth' });
+        // console.log("works");
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const authorizationCode = urlParams.get('code');
+        console.log(authorizationCode);
+
+        if(authorizationCode != null) {
+            // Step 2-3 of the flow
+            var element = document.getElementById("part_2");
+            element.scrollIntoView({ behavior: 'smooth' });
+            $('#part_2').removeClass('faded')
+            $('#part_3').removeClass('faded')
+            $('#part_4').removeClass('faded')
+            $('#get_token_button').removeClass('disabled')
+            $('#authorize_button').addClass("disabled");
+
+        } else {
+            // Step 0-1 of flow
+            var element = document.getElementById("part_0");
+            element.scrollIntoView({ behavior: 'smooth' });
+            $('#part_0').removeClass('faded')
+            $('#part_1').removeClass('faded')
+            
+        }
+
+      });
+
+      function authorize() {
+          if ($("#authorize_button").hasClass("disabled"))
+            return
+        console.log("calling"); 
+        // var signInURL = "https://api-sandbox.sebgroup.com/mga/sps/oauth/oauth20/authorize?client_id=VgygUSwjw3USB2gLRzgA&redirect_uri=https%3A%2F%2Fgophers-cafe-game.herokuapp.com%2Fhttp%3A%2F%2F127.0.0.1%3A5500%2Findex.html&response_type=code&scope=psd2_accounts%2520psd2_payments"
+            $.get( "generate_url", function( data ) {
+                window.location.href = data;           
+            });
+      }
+
+      function getToken() {
+        if ($("#get_token_button").hasClass("disabled"))
+            return
+            urlParams = new URLSearchParams(window.location.search);
+            authorizationCode = urlParams.get('code');
+            console.log(authorizationCode);
+
+            $('#part_2').fadeTo("slow",0.2);
+            $('#get_token_button').addClass("disabled");
+
+            $.getJSON( "token", {"authorization_code": authorizationCode}, function( data ) {
+
+                $('#get_accounts_button').data('token', data.access_token)
+                $('#get_accounts_button').removeClass("disabled")
+                console.log(data);
+                
+            });
+            
+        }
+
+        function getAccounts() {
+            if ($("#get_accounts_button").hasClass("disabled") || $('#get_accounts_button').data('token') == null)
+                return
+    
+                token = $('#get_accounts_button').data('token')
+    
+                $.getJSON( "accounts", {"token": token}, function( data ) {
+                    console.log(data); 
+                    
+                    $.each(data.accounts, function(index, account) {
+                        $("#accordionAccounts").append(generateCard(account, index));
+                    });
+
+                    $('#get_accounts_button').hide();
+                });
+        }
+
+    </script>
+  </body>
+</html>
