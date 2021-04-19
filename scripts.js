@@ -51,9 +51,9 @@ var cardTemplate = `<div class="card">
     </button>
 
     <div class="dropdown-menu" aria-labelledby="dropdownMenu1" aria-expanded="true">
-      <a class="dropdown-item" href="#" onclick="copyToClipboard(event, '{{ available_balance }}')">Copy balance</a>
-      <a class="dropdown-item" href="#" onclick="copyToClipboard(event, '{{ bban }}')">Copy BBAN</a>
-      <a class="dropdown-item" href="#" onclick="copyToClipboard(event, '{{ iban }}')">Copy IBAN</a>
+      <a class="dropdown-item" href="#" onclick="copyToClipboard(event, '{{ available_balance }}', 'balance')">Copy balance</a>
+      <a class="dropdown-item" href="#" onclick="copyToClipboard(event, '{{ bban }}', 'BBAN')">Copy BBAN</a>
+      <a class="dropdown-item" href="#" onclick="copyToClipboard(event, '{{ iban }}', 'IBAN')">Copy IBAN</a>
     </div>
     </div>
 
@@ -81,16 +81,40 @@ function generateCard(account, index) {
   return rendered;
 }
 
-function copyToClipboard(event, value) {
-  updateClipboard(value);
+function copyToClipboard(event, value, alertName) {
+  updateClipboard(value, alertName);
   event.preventDefault();
   event.stopPropagation();
 }
 
-function updateClipboard(value) {
+// Show a simple toast message that fades automatically
+// Element is removed afterwards
+function createToast(message) {
+  var elem = $('' +
+      '<div class="toast" aria-live="assertive" aria-atomic="true">' +
+      '<div class="toast-body">' +
+      message +
+      '</div>' +
+      '</div>')
+
+  $(elem).toast('show');
+
+  // Remove element after it has been hidden
+  $(elem).on('hidden.bs.toast', function () {
+    $(elem).remove();
+  })
+
+  $("body").append(elem);
+}
+
+function updateClipboard(value, alertName) {
   navigator.clipboard.writeText(value).then(
     function() {
       console.log("copied", value);
+      alertName = alertName.charAt(0).toUpperCase() +
+      alertName.slice(1);
+
+      createToast(alertName + " copied.")
     },
     function() {}
   );
