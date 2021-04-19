@@ -66,7 +66,7 @@
 
     </style>
   </head>
-  <nav class="navbar fixed-top navbar-light bg-light border">
+  <nav class="navbar fixed-top navbar-light bg-light border" id="navbar">
         <a class="navbar-brand" href="#">
             
                 <h1 class="mt-2">Open Banking Demo</h1> <p class="lead">by Kyeett</p>
@@ -127,25 +127,26 @@
 
     </div>
     <script>
+        function scrollToElement(elementID) {
+            var offset = $("#navbar").height();
+
+            // Copied from https://stackoverflow.com/questions/24665602/scrollintoview-scrolls-just-too-far
+            const y = $("#" + elementID).position().top - offset;
+            console.log("scroll to", y)
+
+            window.scrollTo({top: y, behavior: 'smooth'});
+        }
+
           $(document).ready(function() {
-        // var accounts = JSON.parse(accountsResponse);
 
-        // $.each(accounts.accounts, function(index, account) {
-        //   $("#accordionAccounts").append(generateCard(account, index));
-        // });
-
-        // var element = document.getElementById("scroll");
-        // element.scrollIntoView({ behavior: 'smooth' });
-        // console.log("works");
-        
         const urlParams = new URLSearchParams(window.location.search);
         const authorizationCode = urlParams.get('code');
         console.log(authorizationCode);
 
         if(authorizationCode != null) {
             // Step 2-3 of the flow
-            var element = document.getElementById("part_2");
-            element.scrollIntoView({ behavior: 'smooth' });
+            scrollToElement("part_2")
+
             $('#part_2').removeClass('faded')
             $('#part_3').removeClass('faded')
             $('#part_4').removeClass('faded')
@@ -154,11 +155,9 @@
 
         } else {
             // Step 0-1 of flow
-            var element = document.getElementById("part_0");
-            element.scrollIntoView({ behavior: 'smooth' });
+            scrollToElement("part_0")
             $('#part_0').removeClass('faded')
             $('#part_1').removeClass('faded')
-            
         }
 
       });
@@ -188,7 +187,7 @@
                 $('#get_accounts_button').data('token', data.access_token)
                 $('#get_accounts_button').removeClass("disabled")
                 console.log(data);
-                
+                scrollToElement("part_3")
             });
             
         }

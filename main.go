@@ -14,8 +14,6 @@ import (
 
 	"github.com/kyeett/openbanking/models"
 
-	"github.com/kr/pretty"
-
 	"github.com/go-chi/chi"
 
 	"github.com/kyeett/openbanking/seb"
@@ -29,10 +27,10 @@ const (
 	baseURL = "https://api-sandbox.sebgroup.com/mga/sps/oauth/oauth20/"
 
 	// Hardcoded
-	scope = "psd2_accounts%20psd2_payments"
+	scope = "psd2_accounts psd2_payments"
 
 	// Hardcoded
-	responseType = "code"
+	responseTypeCode = "code"
 )
 
 func getToken(code string) (seb.TokenResponse, error) {
@@ -91,19 +89,16 @@ func getAccounts(token string) (seb.Account, error) {
 	req.Header.Add("PSU-IP-Address", "127.0.0.1")
 	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", token))
 
-	pretty.Println(req)
-
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return seb.Account{}, errors.New("Request to SEB failed")
+		return seb.Account{}, fmt.Errorf("request to SEB failed: %w", err)
 	}
-
-	pretty.Println(res)
-
 	defer res.Body.Close()
 
-	b, _ := ioutil.ReadAll(res.Body)
-	fmt.Println(string(b))
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return seb.Account{}, fmt.Errorf("read body failed: %w", err)
+	}
 
 	decoder := json.NewDecoder(bytes.NewReader(b))
 	var response seb.Account
@@ -207,7 +202,7 @@ func handleGenerateURL(w http.ResponseWriter, r *http.Request) {
 	params.Add("client_id", myService.ClientID)
 	params.Add("scope", scope)
 	params.Add("redirect_uri", myService.redirectURI)
-	params.Add("response_type", "code")
+	params.Add("response_type", responseTypeCode)
 	u.RawQuery = params.Encode()
 
 	w.Write([]byte(u.String()))
