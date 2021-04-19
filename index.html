@@ -117,6 +117,9 @@
                     </center>
 
                     <div class="accordion mt-5" id="accordionAccounts"></div>
+
+                    <!-- Quick fix to make UX nicer-->
+                    <div id="get_accounts_padding" class="m-5">&nbsp;</div>
                 </div>
 
 
@@ -206,6 +209,8 @@
                     });
 
                     $('#get_accounts_button').hide();
+                    $('#get_accounts_padding').hide();
+                    scrollToElement("part_3");
                 });
         }
 

@@ -1,4 +1,3 @@
-//var cardTemplate = "<div>HELLO {{name}}</div>";
 
 var cardTemplate = `<div class="card">
 <div class="card-header p-0" id="heading_{{index}}">
@@ -79,12 +78,12 @@ function generateCard(account, index) {
   account["print_balance"] = account["available_balance"].toFixed(2);
 
   var rendered = Mustache.render(cardTemplate, account);
-  //   console.log(rendered);
   return rendered;
 }
 
 function copyToClipboard(event, value) {
   updateClipboard(value);
+  event.preventDefault();
   event.stopPropagation();
 }
 
