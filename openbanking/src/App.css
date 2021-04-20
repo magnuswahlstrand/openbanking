@@ -1,0 +1,14 @@
+.container.content {
+    max-width: 680px;
+}
+
+.faded {
+    opacity: 0.2
+}
+
+.toast {
+    left: 50%;
+    position: fixed;
+    transform: translate(-50%, 0px);
+    z-index: 9999;
+}
